@@ -4,6 +4,24 @@ This repository contains a small Java example in `interview.java`. It applies a
 set of range updates to an array and counts how many positions end with a value
 greater than a threshold.
 
+## First thread example
+
+[`SimpleThread.java`](./SimpleThread.java) creates new `Thread` objects and
+prints each worker's name as it starts. The first example starts one worker and
+waits for it. The second starts three workers before waiting, so their work can
+overlap. Calling `start()` launches a new thread; calling `join()` makes the
+main thread wait for a worker to finish. Calling `run()` directly would run the
+code on the current thread instead.
+
+Compile and run the thread example with a JDK:
+
+```sh
+javac SimpleThread.java
+java SimpleThread
+```
+
+The order of the workers' messages may vary because they run concurrently.
+
 ## How it works
 
 `findMemoryStackCount(n, k, queries)` creates an array of `n` positions. Each
@@ -16,7 +34,8 @@ For those values, the method returns `3`.
 
 ## Compile and run
 
-From the repository directory, compile and run with a JDK:
+From the repository directory, compile and run the range-update example with a
+JDK:
 
 ```sh
 javac interview.java
