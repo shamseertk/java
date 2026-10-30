@@ -1,36 +1,18 @@
 public class SimpleThread {
-  public static void main(String[] args) throws InterruptedException {
-    System.out.println("=== One new thread ===");
-    Thread worker = createWorker("worker-1");
-    System.out.println("Starting " + worker.getName());
-    worker.start();
-    worker.join();
-
-    System.out.println("\n=== Several new threads at once ===");
-    Thread[] workers = {
-      createWorker("worker-2"),
-      createWorker("worker-3"),
-      createWorker("worker-4")
-    };
-
-    for (Thread thread : workers) {
-      System.out.println("Starting " + thread.getName());
-      thread.start();
-    }
-
-    for (Thread thread : workers) {
-      thread.join();
-    }
-  }
-
-  private static Thread createWorker(String name) {
-    return new Thread(name) {
+  public static void main(String[] args) {
+    // Running simple thread single task.
+    Thread singleWorker = new Thread(){
       @Override
       public void run() {
-        System.out.println(getName() + " is running on " + Thread.currentThread().getName());
-
-        for (int step = 1; step <= 3; step++) {
-          System.out.println(getName() + " doing work " + step);
+        System.out.println("First thread");
+      };
+    };
+    singleWorker.start();
+    // Running thread in a loop
+    for (int number = 1; number <= 3; number++) {
+      Thread worker = new Thread(() -> {
+        for (int step = 1; step <= 2; step++) {
+          System.out.println(Thread.currentThread().getName() + " - step " + step);
           try {
             Thread.sleep(100);
           } catch (InterruptedException e) {
@@ -38,9 +20,9 @@ public class SimpleThread {
             return;
           }
         }
+      }, "Worker " + number);
 
-        System.out.println(getName() + " finished");
-      }
-    };
+      worker.start();
+    }
   }
 }

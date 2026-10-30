@@ -4,25 +4,59 @@ This repository contains a small Java example in `interview.java`. It applies a
 set of range updates to an array and counts how many positions end with a value
 greater than a threshold.
 
-## First thread example
+## Chapter 1: Starting threads
 
-[`SimpleThread.java`](./SimpleThread.java) creates new `Thread` objects and
-prints each worker's name as it starts. The first example starts one worker and
-waits for it. The second starts three workers before waiting, so their work can
-overlap. Calling `start()` launches a new thread; calling `join()` makes the
-main thread wait for a worker to finish. Calling `run()` directly would run the
-code on the current thread instead.
+[`SimpleThread.java`](./SimpleThread.java) shows how to start a thread with
+`start()`. It starts one simple thread and then starts three named threads in a
+loop. Their output can appear in different orders because they run
+independently.
 
-Compile and run the thread example with a JDK:
+Compile and run:
 
 ```sh
 javac SimpleThread.java
 java SimpleThread
 ```
 
-The order of the workers' messages may vary because they run concurrently.
+## Chapter 2: Waiting for a thread
 
-## How it works
+[`ThreadJoinExample.java`](./ThreadJoinExample.java) introduces `join()`. After
+starting the worker, the main thread calls `worker.join()` and waits until the
+worker finishes before printing that it has finished. The worker's short pause
+makes the waiting easier to observe.
+
+Compile and run:
+
+```sh
+javac ThreadJoinExample.java
+java ThreadJoinExample
+```
+
+`main` declares `throws InterruptedException` because `join()` can be
+interrupted while waiting.
+
+## Chapter 3: Synchronized function calls
+
+[`SynchronizedFunctionExample.java`](./SynchronizedFunctionExample.java) starts
+three threads that all call `getData()`. The method is `static synchronized`,
+so only one thread can execute it at a time; the others wait for their turn.
+Each caller continues with the data returned to it. A short sleep inside the
+method simulates work so the waiting is easier to observe.
+
+Compile and run:
+
+```sh
+javac SynchronizedFunctionExample.java
+java SynchronizedFunctionExample
+```
+
+Unlike `join()`, `synchronized` controls which thread can enter a method at a
+time. A regular function call already waits for its own return value; it does
+not, by itself, make other threads wait. Once `getData()` returns, another
+thread may enter it even if the first caller has not yet printed or processed
+the returned data.
+
+## Sample test
 
 `findMemoryStackCount(n, k, queries)` creates an array of `n` positions. Each
 query has the form `{start, end, amount}` and adds `amount` to the positions
