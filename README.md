@@ -11,6 +11,18 @@ greater than a threshold.
 loop. Their output can appear in different orders because they run
 independently.
 
+Here is the single-thread example:
+
+```java
+Thread singleWorker = new Thread() {
+  @Override
+  public void run() {
+    System.out.println("First thread");
+  }
+};
+singleWorker.start();
+```
+
 Compile and run:
 
 ```sh
@@ -24,6 +36,18 @@ java SimpleThread
 starting the worker, the main thread calls `worker.join()` and waits until the
 worker finishes before printing that it has finished. The worker's short pause
 makes the waiting easier to observe.
+
+The main thread starts the worker, then waits for it to finish:
+
+```java
+System.out.println("Main: starting worker");
+worker.start();
+
+System.out.println("Main: waiting for worker");
+worker.join();
+
+System.out.println("Main: worker has finished");
+```
 
 Compile and run:
 
@@ -42,6 +66,17 @@ three threads that all call `getData()`. The method is `static synchronized`,
 so only one thread can execute it at a time; the others wait for their turn.
 Each caller continues with the data returned to it. A short sleep inside the
 method simulates work so the waiting is easier to observe.
+
+Here is the synchronized method:
+
+```java
+private static synchronized String getData() throws InterruptedException {
+  String threadName = Thread.currentThread().getName();
+  System.out.println(threadName + ": inside getData");
+  Thread.sleep(500);
+  return "data for " + threadName;
+}
+```
 
 Compile and run:
 
