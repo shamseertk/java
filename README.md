@@ -4,6 +4,16 @@ This repository contains a small Java example in `interview.java`. It applies a
 set of range updates to an array and counts how many positions end with a value
 greater than a threshold.
 
+## Contents
+
+- [Chapter 1: Starting threads](#chapter-1-starting-threads)
+- [Chapter 2: Waiting for a thread](#chapter-2-waiting-for-a-thread)
+- [Chapter 3: Synchronized function calls](#chapter-3-synchronized-function-calls)
+- [Chapter 4: Interrupting a thread](#chapter-4-interrupting-a-thread)
+- [Chapter 5: Daemon threads](#chapter-5-daemon-threads)
+- [Sample test](#sample-test)
+- [Compile and run](#compile-and-run)
+
 ## Chapter 1: Starting threads
 
 [`SimpleThread.java`](./SimpleThread.java) shows how to start a thread with
@@ -90,6 +100,65 @@ time. A regular function call already waits for its own return value; it does
 not, by itself, make other threads wait. Once `getData()` returns, another
 thread may enter it even if the first caller has not yet printed or processed
 the returned data.
+
+## Chapter 4: Interrupting a thread
+
+[`ThreadInterruptExample.java`](./ThreadInterruptExample.java) shows how to
+request that a thread stop. The worker repeats its task until `main` calls
+`worker.interrupt()`. Since the worker is sleeping, it receives an
+`InterruptedException`, handles it in `catch`, and exits.
+
+In everyday terms, `worker.interrupt()` is a request to stop, not a way to
+forcibly kill the worker. Since `Thread.sleep()` is interruptible, the request
+wakes the worker by throwing `InterruptedException`. The `catch` block is where
+the worker responds to that request; here it prints a message and stops.
+
+`catch` does not require another `interrupt()` call. This example does not call
+`Thread.currentThread().interrupt()` because the worker exits immediately. If
+code catches `InterruptedException` but needs to continue or return to a caller
+that should know about the request, it can restore the interrupt flag with
+`Thread.currentThread().interrupt()`. The exception itself clears that flag
+when thrown.
+
+```java
+try {
+  Thread.sleep(300);
+} catch (InterruptedException e) {
+  System.out.println("Worker: interrupted, stopping");
+}
+```
+
+```java
+worker.start();
+Thread.sleep(1000);
+worker.interrupt();
+worker.join();
+```
+
+Compile and run:
+
+```sh
+javac ThreadInterruptExample.java
+java ThreadInterruptExample
+```
+
+The main thread calls `join()` so it waits until the worker has stopped.
+
+## Chapter 5: Daemon threads
+
+[`ThreadDaemonExample.java`](./ThreadDaemonExample.java) creates a background
+thread and marks it as a daemon with `setDaemon(true)` before starting it. The
+worker prints while the main thread is active. When `main` finishes, the JVM
+can exit without waiting for the daemon thread, so its work may stop abruptly.
+Daemon threads are for background work that should not keep the program alive;
+do not use them for work that must finish or save important data.
+
+Compile and run:
+
+```sh
+javac ThreadDaemonExample.java
+java ThreadDaemonExample
+```
 
 ## Sample test
 
